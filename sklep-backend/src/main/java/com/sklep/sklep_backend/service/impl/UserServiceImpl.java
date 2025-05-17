@@ -1,9 +1,18 @@
 package com.sklep.sklep_backend.service.impl;
 
+import com.sklep.sklep_backend.dto.OrderDto;
+import com.sklep.sklep_backend.dto.ProductAndNumberDto;
+import com.sklep.sklep_backend.dto.ProductDto;
 import com.sklep.sklep_backend.dto.ReqRes;
+import com.sklep.sklep_backend.entity.OrdersEntity;
 import com.sklep.sklep_backend.entity.OurUsersEntity;
+import com.sklep.sklep_backend.entity.ProductAndNumberEntity;
+import com.sklep.sklep_backend.entity.ProductsEntity;
+import com.sklep.sklep_backend.repository.OrdersRepo;
+import com.sklep.sklep_backend.repository.ProductsRepo;
 import com.sklep.sklep_backend.repository.UsersRepo;
 import com.sklep.sklep_backend.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,8 +20,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -22,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private final JWTUtilsImpl jwtUtils;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final ProductsRepo productsRepo;
+    private final OrdersRepo ordersRepo;
 
     @Value("${BACKEND_URL}")
     private String BASE_URL;
@@ -100,4 +113,126 @@ public class UserServiceImpl implements UserService {
             return response;
         }
     }
+
+
+    @Override
+    public ProductDto get_all_products() {
+        ProductDto reqRes = new ProductDto();
+
+        try {
+            List<ProductsEntity> result = productsRepo.findAll();
+            if (!result.isEmpty()) {
+                reqRes.setProductsEntityList(result);
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("Successful");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("No products found");
+            }
+            return reqRes;
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred: " + e.getMessage());
+            return reqRes;
+        }
+    }
+    @Override
+    public ProductDto get_product_by_id(int id) {
+        ProductDto reqRes = new ProductDto();
+
+        try {
+            Optional<ProductsEntity> resultOptional = productsRepo.findById(id);
+
+            reqRes.setProductsEntity(resultOptional.get());
+            return reqRes;
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred: " + e.getMessage());
+            return reqRes;
+        }
+    }
+
+
+
+
+
+
+
+
+
+//    public ResponseEntity<String> saveImage(@RequestParam("file") MultipartFile file) throws IOException {
+//        String imagePath = fileStorageService.storeFile(file);
+//        return new ResponseEntity<>(imagePath, HttpStatus.CREATED);
+//    }
+
+
+
+
+
+    @Override
+    public OrderDto getOrdersByUserId(Integer userId) {
+        OrderDto orderDto = new OrderDto();
+
+        try {
+            // Pobieramy listę zamówień użytkownika
+            List<Integer> orderIds = ordersRepo.findAll().stream()
+                    .filter(order -> order.getOurUser().getId().equals(userId))
+                    .map(OrdersEntity::getId)
+                    .toList();
+
+            System.out.println(orderIds);
+
+            if (!orderIds.isEmpty()) {
+                // Dodajemy listę zamówień do odpowiedzi
+//                orderDto.setProducts_id_list(orderIds);
+                List<OrdersEntity> ordersEntityList=new ArrayList<>();
+                for (int i = 0; i < orderIds.size(); i++) {
+                    OrdersEntity ordersEntity = ordersRepo.findById(orderIds.get(i)).get();
+                    ordersEntity.setOurUser(null);
+                    ordersEntityList.add(ordersEntity);
+                }
+                orderDto.setOrdersEntityList(ordersEntityList);
+                orderDto.setMessage("Orders fetched successfully");
+                orderDto.setStatusCode(200);
+            } else {
+                orderDto.setMessage("No orders found for user ID: " + userId);
+                orderDto.setStatusCode(404);
+            }
+        } catch (Exception e) {
+            orderDto.setStatusCode(500);
+            orderDto.setError("Error occurred: " + e.getMessage());
+        }
+
+        return orderDto;
+    }
+
+
+
+
+
+
+
+    @Override
+    public ProductAndNumberDto getProductsAndNumbersByOrderId(Integer orderId) {
+        ProductAndNumberDto productAndNumberDto = new ProductAndNumberDto();
+
+        try {
+            Optional<OrdersEntity> orderOptional = ordersRepo.findById(orderId);
+            if (orderOptional.isPresent()) {
+                List<ProductAndNumberEntity> productsAndNumbers = orderOptional.get().getProductsAndNumbers();
+                productAndNumberDto.setProductsAndNumbersList(productsAndNumbers);
+                productAndNumberDto.setMessage("Products fetched successfully for order ID: " + orderId);
+                productAndNumberDto.setStatusCode(200);
+            } else {
+                productAndNumberDto.setMessage("Order not found for ID: " + orderId);
+                productAndNumberDto.setStatusCode(404);
+            }
+        } catch (Exception e) {
+            productAndNumberDto.setStatusCode(500);
+            productAndNumberDto.setError("Error occurred: " + e.getMessage());
+        }
+
+        return productAndNumberDto;
+    }
+
 }
