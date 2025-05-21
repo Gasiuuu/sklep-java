@@ -7,6 +7,8 @@ import com.sklep.sklep_backend.dto.ReqRes;
 import com.sklep.sklep_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -91,5 +93,32 @@ public class UserController {
     public ResponseEntity<ReqRes> deleteUser(@PathVariable Integer userId){
         return ResponseEntity.ok(userService.deleteUser(userId));
     }
+
+    @GetMapping("/adminuser/get-profile")
+    public ResponseEntity<ReqRes> getMyProfile(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        ReqRes response = userService.getMyInfo(email);
+        return  ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @PostMapping("/adminuser/add_order")
+    public ResponseEntity<OrderDto> add_Order(@RequestBody OrderDto reqres){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return ResponseEntity.ok(userService.add_order(email,reqres));
+    }
+    @GetMapping("/adminuser/orders")
+    public ResponseEntity<OrderDto> getOrdersByUserId2() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        int userId=userService.getIdByEmail(email);
+        return ResponseEntity.ok(userService.getOrdersByUserId(userId));
+    }
+
+
+
+
+
 
 }

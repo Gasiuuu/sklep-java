@@ -1,5 +1,6 @@
 package com.sklep.sklep_backend.service.impl;
 
+import com.sklep.sklep_backend.ProductsAndNumber;
 import com.sklep.sklep_backend.dto.OrderDto;
 import com.sklep.sklep_backend.dto.ProductAndNumberDto;
 import com.sklep.sklep_backend.dto.ProductDto;
@@ -322,6 +323,87 @@ public class UserServiceImpl implements UserService {
             reqRes.setMessage("Error occurred while deleting user: " + e.getMessage());
         }
         return reqRes;
+    }
+
+    @Override
+    public ReqRes getMyInfo(String email) {
+        ReqRes reqRes = new ReqRes();
+        try {
+            Optional<OurUsersEntity> userOptional = usersRepo.findByEmail(email);
+            if (userOptional.isPresent()) {
+                reqRes.setOurUsersEntity(userOptional.get());
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("successful");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("User not found for update");
+            }
+
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred while getting user info: " + e.getMessage());
+        }
+        return reqRes;
+
+    }
+
+    @Override
+    public OrderDto add_order(String email, OrderDto orderDto) {
+        OrderDto resp = new OrderDto();
+
+        try {
+            OrdersEntity order = new OrdersEntity();
+            System.out.println("11111111111111");
+            Optional<OurUsersEntity> userOptional = usersRepo.findByEmail(email);
+            OurUsersEntity user = userOptional.orElse(null);
+            order.setOurUser(user);
+            System.out.println("2222222222222");
+            List<ProductsAndNumber> productsAndNumbers = orderDto.getProductsAndNumbersList();
+//            List<Products> all_products_list=productsRepo.findById();
+            System.out.println("33333333333333");
+            List<ProductAndNumberEntity> currentProductAndNumberEntityList = new ArrayList<ProductAndNumberEntity>();
+            for (ProductsAndNumber productsAndNumber : productsAndNumbers) {
+
+                Optional<ProductsEntity> productOptional = productsRepo.findById(productsAndNumber.getProductId());
+                if (productOptional.isEmpty()) {
+                    throw new EntityNotFoundException("Product with ID " + productsAndNumber.getProductId() + " not found");
+                }
+
+                ProductsEntity product = productOptional.get();
+                ProductAndNumberEntity productAndNumberEntity=ProductAndNumberEntity.builder()
+                        .product(product)
+                        .number(productsAndNumber.getProductNumber())
+                        .build();
+                currentProductAndNumberEntityList.add(productAndNumberEntity);
+            }
+            System.out.println("4444444444444");
+
+            order.setProductsAndNumbers(currentProductAndNumberEntityList);
+            System.out.println("55555555555555");
+            OrdersEntity orderResult = ordersRepo.save(order);
+            System.out.println("66666666666666");
+            if (orderResult.getId() > 0) {
+                resp.setOrdersEntity(orderResult);
+                resp.setMessage("Order succesfully added");
+                resp.setStatusCode(200);
+
+            }
+        }catch(Exception e){
+            resp.setStatusCode(500);
+            resp.setError(e.getMessage());
+        }
+        return resp;
+
+
+    }
+
+    @Override
+    public int getIdByEmail(String email) {
+        var user = usersRepo.findByEmail(email);
+        if (user.isPresent()) {
+            return user.get().getId();
+        }
+        return 0;
     }
 
 }

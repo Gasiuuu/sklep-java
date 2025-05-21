@@ -18,4 +18,8 @@ public interface UserService{
     ReqRes getUsersById(Integer id);
     ReqRes updateUser(Integer id, ReqRes updatedUser);
     ReqRes deleteUser(Integer id);
+    ReqRes getMyInfo(String email);
+    OrderDto add_order(String email, OrderDto reqres);
+    int getIdByEmail(String email);
+
 }
