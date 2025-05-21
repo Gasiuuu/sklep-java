@@ -70,9 +70,26 @@ public class UserController {
         return Files.readAllBytes(Paths.get(PHOTO_DIR + fileName));
     }
 
+    @GetMapping("/admin/get-all-users")
+    public ResponseEntity<ReqRes> getAllUsers(){
+        return ResponseEntity.ok(userService.getAllUsers());
 
+    }
 
+    @GetMapping("/admin/get-users/{userId}")
+    public ResponseEntity<ReqRes> getUserById(@PathVariable Integer userId){
+        return ResponseEntity.ok(userService.getUsersById(userId));
 
+    }
 
+    @PostMapping("/admin/update-user/{userId}")
+    public ResponseEntity<ReqRes> updateUser(@PathVariable Integer userId, @RequestBody ReqRes reqres){
+        return ResponseEntity.ok(userService.updateUser(userId, reqres));
+    }
+
+    @DeleteMapping("/admin/delete-user/{userId}")
+    public ResponseEntity<ReqRes> deleteUser(@PathVariable Integer userId){
+        return ResponseEntity.ok(userService.deleteUser(userId));
+    }
 
 }

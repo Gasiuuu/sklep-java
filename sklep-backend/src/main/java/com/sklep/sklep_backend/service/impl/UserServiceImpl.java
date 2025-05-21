@@ -235,4 +235,93 @@ public class UserServiceImpl implements UserService {
         return productAndNumberDto;
     }
 
+
+    @Override
+    public ReqRes getAllUsers() {
+        ReqRes reqRes = new ReqRes();
+
+        try {
+            List<OurUsersEntity> result = usersRepo.findAll();
+            if (!result.isEmpty()) {
+                reqRes.setOurUsersEntityList(result);
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("Successful");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("No users found");
+            }
+            return reqRes;
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred: " + e.getMessage());
+            return reqRes;
+        }
+    }
+
+    @Override
+    public ReqRes getUsersById(Integer id) {
+        ReqRes reqRes = new ReqRes();
+        try {
+            OurUsersEntity usersById = usersRepo.findById(id).orElseThrow(() -> new RuntimeException("User Not found"));
+            reqRes.setOurUsersEntity(usersById);
+            reqRes.setStatusCode(200);
+            reqRes.setMessage("Users with id '" + id + "' found successfully");
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred: " + e.getMessage());
+        }
+        return reqRes;
+    }
+
+    @Override
+    public ReqRes updateUser(Integer userId, ReqRes updatedUser) {
+        ReqRes reqRes = new ReqRes();
+        try {
+            Optional<OurUsersEntity> userOptional = usersRepo.findById(userId);
+            if (userOptional.isPresent()) {
+                OurUsersEntity existingUser = userOptional.get();
+                existingUser.setEmail(updatedUser.getEmail());
+                existingUser.setName(updatedUser.getName());
+                existingUser.setCity(updatedUser.getCity());
+                existingUser.setRole(updatedUser.getRole());
+
+                if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                    existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                }
+
+                OurUsersEntity savedUser = usersRepo.save(existingUser);
+                reqRes.setOurUsersEntity(savedUser);
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("User updated successfully");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("User not found for update");
+            }
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred while updating user: " + e.getMessage());
+        }
+        return reqRes;
+    }
+
+    @Override
+    public ReqRes deleteUser(Integer userId) {
+        ReqRes reqRes = new ReqRes();
+        try {
+            Optional<OurUsersEntity> userOptional = usersRepo.findById(userId);
+            if (userOptional.isPresent()) {
+                usersRepo.deleteById(userId);
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("User deleted successfully");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("User not found for deletion");
+            }
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred while deleting user: " + e.getMessage());
+        }
+        return reqRes;
+    }
+
 }

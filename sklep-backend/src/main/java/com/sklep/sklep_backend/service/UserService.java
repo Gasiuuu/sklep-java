@@ -14,5 +14,8 @@ public interface UserService{
     ProductDto get_product_by_id(int id);
     OrderDto getOrdersByUserId(Integer userId);
     ProductAndNumberDto getProductsAndNumbersByOrderId(Integer orderId);
-
+    ReqRes getAllUsers();
+    ReqRes getUsersById(Integer id);
+    ReqRes updateUser(Integer id, ReqRes updatedUser);
+    ReqRes deleteUser(Integer id);
 }
