@@ -12,8 +12,10 @@ import com.sklep.sklep_backend.entity.ProductsEntity;
 import com.sklep.sklep_backend.repository.OrdersRepo;
 import com.sklep.sklep_backend.repository.ProductsRepo;
 import com.sklep.sklep_backend.repository.UsersRepo;
+import com.sklep.sklep_backend.service.MailService;
 import com.sklep.sklep_backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,11 +38,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ProductsRepo productsRepo;
     private final OrdersRepo ordersRepo;
+    private final MailService mailService;
+
 
     @Value("${BACKEND_URL}")
     private String BASE_URL;
 
     @Override
+    @Transactional
     public ReqRes register(ReqRes registrationRequest) {
         ReqRes resp = new ReqRes();
 
@@ -58,6 +63,9 @@ public class UserServiceImpl implements UserService {
                 resp.setMessage("User Saved Successfully");
                 resp.setStatusCode(200);
             }
+            mailService.sendPlainText(ourUser.getEmail(), "Potwierdzenie założenia konta", "Witaj, dziękujemy za założenie konta! 🎉");
+
+
 
         } catch (Exception e) {
             resp.setStatusCode(500);
@@ -275,6 +283,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ReqRes updateUser(Integer userId, ReqRes updatedUser) {
         ReqRes reqRes = new ReqRes();
         try {
@@ -306,6 +315,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ReqRes deleteUser(Integer userId) {
         ReqRes reqRes = new ReqRes();
         try {
@@ -348,6 +358,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public OrderDto add_order(String email, OrderDto orderDto) {
         OrderDto resp = new OrderDto();
 
