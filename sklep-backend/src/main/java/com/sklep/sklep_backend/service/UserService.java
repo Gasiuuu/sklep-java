@@ -21,5 +21,11 @@ public interface UserService{
     ReqRes getMyInfo(String email);
     OrderDto add_order(String email, OrderDto reqres);
     int getIdByEmail(String email);
+    ProductDto add_product(String imagePath,ProductDto productDto);
+    ProductDto updateProduct(ProductDto productDto, Integer productId,String imagePath);
+    ProductDto deleteProduct(Integer productId);
+    OrderDto delete_order(Integer orderId);
+    OrderDto getAllOrders();
+
 
 }

@@ -417,4 +417,126 @@ public class UserServiceImpl implements UserService {
         return 0;
     }
 
+    @Override
+    @Transactional
+    public ProductDto add_product(String imagePath,ProductDto productDto) {
+        ProductDto resp = new ProductDto();
+
+        try {
+            ProductsEntity product = ProductsEntity.builder()
+                    .name(productDto.getName())
+                    .category(productDto.getCategory())
+                    .price(productDto.getPrice())
+                    .description(productDto.getDescription())
+                    .imageUrl(BASE_URL+"/public/product/image/"+imagePath)
+                    .build();
+
+//            Products product = new Products();
+//            product.setName(productDto.getName());
+//            product.setCategory(productDto.getCategory());
+//            product.setPrice(productDto.getPrice());
+            ProductsEntity productResult = productsRepo.save(product);
+            if (productResult.getId() > 0) {
+                resp.setProductsEntity((productResult));
+                resp.setMessage("Product succesfully added");
+                resp.setStatusCode(200);
+            }
+
+        } catch (Exception e) {
+            resp.setStatusCode(500);
+            resp.setError(e.getMessage());
+        }
+        return resp;
+    }
+
+    @Override
+    @Transactional
+    public ProductDto updateProduct(ProductDto productDto, Integer productId, String imagePath){
+        System.out.println("11111");
+        System.out.println(productDto);
+        Optional<ProductsEntity> oldProductEntityOptional=productsRepo.findById(productId);
+        ProductsEntity oldProductEntity=oldProductEntityOptional.get();
+
+        String currentImageUrl=oldProductEntity.getImageUrl();
+        if(imagePath!=""){
+            currentImageUrl=BASE_URL+"/public/product/image/"+imagePath;
+        }
+        System.out.println(productDto.getName());
+        ProductsEntity product = ProductsEntity.builder()
+                .id(productId)
+                .name(productDto.getName())
+                .category(productDto.getCategory())
+                .price(productDto.getPrice())
+                .description(productDto.getDescription())
+                .imageUrl(currentImageUrl)
+                .build();
+
+        productsRepo.save(product);
+        return productDto;
+    }
+
+    @Override
+    @Transactional
+    public ProductDto deleteProduct(Integer productId) {
+        ProductDto reqRes = new ProductDto();
+        try {
+            Optional<ProductsEntity> userOptional = productsRepo.findById(productId);
+            if (userOptional.isPresent()) {
+                productsRepo.deleteById(productId);
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("User deleted successfully");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("User not found for deletion");
+            }
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred while deleting user: " + e.getMessage());
+        }
+        return reqRes;
+    }
+
+    @Override
+    @Transactional
+    public OrderDto delete_order(Integer orderId) {
+        OrderDto reqRes = new OrderDto();
+        try {
+            Optional<OrdersEntity> userOptional = ordersRepo.findById(orderId);
+            if (userOptional.isPresent()) {
+                ordersRepo.deleteById(orderId);
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("order deleted successfully");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("User not found for deletion");
+            }
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred while deleting user: " + e.getMessage());
+        }
+        return reqRes;
+    }
+
+    @Override
+    public OrderDto getAllOrders() {
+        OrderDto orderDto = new OrderDto();
+
+        try {
+            List<OrdersEntity> ordersEntityList = ordersRepo.findAll();
+            orderDto.setOrdersEntityList(ordersEntityList);
+            orderDto.setMessage("Orders fetched successfully");
+            orderDto.setStatusCode(200);
+
+        } catch (Exception e) {
+            orderDto.setStatusCode(500);
+            orderDto.setError("Error occurred: " + e.getMessage());
+        }
+
+        return orderDto;
+    }
+
+
+
+
+
 }

@@ -4,12 +4,14 @@ import com.sklep.sklep_backend.dto.OrderDto;
 import com.sklep.sklep_backend.dto.ProductAndNumberDto;
 import com.sklep.sklep_backend.dto.ProductDto;
 import com.sklep.sklep_backend.dto.ReqRes;
+import com.sklep.sklep_backend.service.FileStorageService;
 import com.sklep.sklep_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +25,7 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 public class UserController {
 
     private final UserService userService;
+    private final FileStorageService fileStorageService;
 
     @PostMapping("/auth/register")
     public ResponseEntity<ReqRes> register(@RequestBody ReqRes reg){
@@ -114,6 +117,44 @@ public class UserController {
         String email = authentication.getName();
         int userId=userService.getIdByEmail(email);
         return ResponseEntity.ok(userService.getOrdersByUserId(userId));
+    }
+
+    @PostMapping("/admin/add-product")
+    public ResponseEntity<ProductDto> add_product(@RequestParam("file") MultipartFile file, ProductDto productDto) throws IOException{
+//        System.out.println("111111");
+        String imagePath = fileStorageService.storeFile(file);
+//        return ResponseEntity.ok(productDto);
+        return ResponseEntity.ok(userService.add_product(imagePath, productDto));
+//    return ResponseEntity.ok(new ProductDto());
+    }
+
+    @PutMapping("/admin/update-product/{productId}")
+    public ResponseEntity<ProductDto> updateProduct(@RequestParam(value = "file", required = false) MultipartFile file,
+                                                    @RequestPart("productDto") ProductDto productDto,
+                                                    @PathVariable Integer productId) throws IOException{
+//        System.out.println("1123213123");
+//        System.out.println(productDto);
+        String imagePath="";
+        if(file != null){
+            imagePath = fileStorageService.storeFile(file);
+        }
+
+        return ResponseEntity.ok(userService.updateProduct(productDto,productId,imagePath));
+    }
+
+    @DeleteMapping("/admin/delete-product/{productId}")
+    public ResponseEntity<ProductDto> deleteProduct(@PathVariable Integer productId){
+        return ResponseEntity.ok(userService.deleteProduct(productId));
+    }
+
+    @DeleteMapping("/admin/delete_order/{orderId}")
+    public ResponseEntity<OrderDto> delete_order(@PathVariable Integer orderId){
+        return ResponseEntity.ok(userService.delete_order(orderId));
+    }
+
+    @GetMapping("/admin/allOrders")
+    public ResponseEntity<OrderDto> getAllOrders() {
+        return ResponseEntity.ok(userService.getAllOrders());
     }
 
 
