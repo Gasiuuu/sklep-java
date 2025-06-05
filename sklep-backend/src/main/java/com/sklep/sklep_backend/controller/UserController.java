@@ -35,7 +35,15 @@ public class UserController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<ReqRes> login(@RequestBody ReqRes req){
+        System.out.println("123");
         return ResponseEntity.ok(userService.login(req));
+    }
+
+    @GetMapping("/admin/get-all-users")
+    public ResponseEntity<ReqRes> getAllUsers(){
+        System.out.println("123");
+        return ResponseEntity.ok(userService.getAllUsers());
+
     }
 
     @PostMapping("/auth/refresh")
@@ -75,11 +83,7 @@ public class UserController {
         return Files.readAllBytes(Paths.get(PHOTO_DIR + fileName));
     }
 
-    @GetMapping("/admin/get-all-users")
-    public ResponseEntity<ReqRes> getAllUsers(){
-        return ResponseEntity.ok(userService.getAllUsers());
 
-    }
 
     @GetMapping("/admin/get-users/{userId}")
     public ResponseEntity<ReqRes> getUserById(@PathVariable Integer userId){

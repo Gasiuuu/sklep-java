@@ -15,7 +15,8 @@ import com.sklep.sklep_backend.repository.UsersRepo;
 import com.sklep.sklep_backend.service.MailService;
 import com.sklep.sklep_backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true) // <<< klucz do błędu “LogicalConnection… is closed”
 public class UserServiceImpl implements UserService {
     private final UsersRepo usersRepo;
     private final JWTUtilsImpl jwtUtils;
@@ -246,6 +248,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Transactional
     public ReqRes getAllUsers() {
         ReqRes reqRes = new ReqRes();
 
