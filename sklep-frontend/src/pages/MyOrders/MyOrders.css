@@ -1,0 +1,19 @@
+.myOrders-productItem {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.myOrders-productItem img {
+    width: 128px;
+    height: 128px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.myOrders-productItem p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+}

@@ -9,7 +9,6 @@ function UserPage() {
     const [error, setError] = useState(null);
 
     const [editingUser, setEditingUser] = useState(null);
-    // Stan formularza – przechowuje nowe wartości pól podczas edycji
     const [editFormData, setEditFormData] = useState({
         city: '',
         email: '',
@@ -59,11 +58,9 @@ function UserPage() {
             console.log(token);
             console.log(editingUser.id);
             console.log(editFormData);
-            // Wywołanie metody aktualizującej produkt w serwisie
             await UserService.updateUser(editingUser.id, editFormData, token);
 
-            // Aktualizacja listy produktów w stanie – np. możemy pobrać je jeszcze raz,
-            // lub zaktualizować tylko jeden produkt w tablicy:
+
             setUsers((prevUsers) => {
                 return prevUsers.map((prod) => {
                     if (prod.id === editingUser.id) {
@@ -73,7 +70,6 @@ function UserPage() {
                 });
             });
 
-            // Wyczyść stany po zakończeniu edycji
             setEditingUser(null);
             setEditFormData({
                 city: '',
@@ -88,7 +84,6 @@ function UserPage() {
         }
     };
 
-    // Anulowanie/wyjście z edycji bez zapisywania
     const handleCancelEdit = () => {
         setEditingUser(null);
         setEditFormData({
@@ -101,9 +96,7 @@ function UserPage() {
     };
 
     const handleEditUser = (user) => {
-        // Ustawiamy aktualnie edytowany produkt w stanie
         setEditingUser(user);
-        // Wypełniamy formularz wartościami produktu
         setEditFormData({
             city: user.city,
             email: user.email,
@@ -136,7 +129,7 @@ function UserPage() {
                                     className="edit-user-btn"
                                     onClick={() => handleEditUser(user)}
                                 >
-                                    Edytuj produkt
+                                    Edytuj użytkownika
                                 </button>
                                 <button style={{width:'180px', float: 'right'}} className="delete-product-btn" onClick={() => deleteUser(user.id)}>Usuń
                                     użytkownika
@@ -207,7 +200,6 @@ function UserPage() {
                             />
                         </div>
 
-                        {/* Jeśli chcesz mieć opcję aktualizacji pliku w trakcie edycji: */}
                         <div className="editUser-form-group">
                             <input
                                 type="text"

@@ -1,0 +1,176 @@
+/*!* Przykładowe style w pliku AdminProductPage.css *!*/
+/*!* Kontener całego modala (overlay) *!*/
+/*.edit-product-modal {*/
+/*    position: fixed;               !* Modal unieruchomiony względem okna przeglądarki *!*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    background-color: rgba(0, 0, 0, 0.4); !* Ciemne, półprzezroczyste tło *!*/
+/*    display: flex;                !* Wycentrowanie zawartości w pionie i poziomie *!*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    z-index: 9999;                !* Wysoki z-index, aby modal był na wierzchu *!*/
+/*}*/
+
+/*!* Kontener właściwej treści (formularz) *!*/
+/*.edit-product-form {*/
+/*    background-color: #fff;*/
+/*    padding: 20px;*/
+/*    border-radius: 8px;*/
+/*    max-width: 500px;             !* Przykładowa szerokość *!*/
+/*    width: 100%;*/
+/*    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);*/
+/*}*/
+/* Tło na cały ekran (modal z overlayem) */
+.edit-product-btn {
+    background-color: #00a6ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 8px;
+    margin-left: 10px;
+    margin-right: 3%;
+}
+
+.edit-product-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    /* Półprzezroczyste przyciemnienie */
+    background-color: rgba(0, 0, 0, 0.4);
+
+    /* Wycentrowanie zawartości (formularza) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Żeby modal był na wierzchu */
+}
+
+/* Formularz w "okienku" na środku */
+.editProduct-form {
+    background-color: #1d1d1d;
+    padding: 20px;
+
+    /* Ramka wokół formularza */
+    /*border: 2px solid #ccc;*/
+    border-radius: 8px;
+
+    /* Określenie maksymalnej wielkości,
+       aby nie zajmować całego ekranu */
+    max-width: 500px;
+    width: 90%;
+
+    /* Można dodać też cień, by wyglądało jak okienko */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Przykładowe style dla pojedynczych pól */
+.editProduct-form-group {
+    margin-bottom: 15px;
+}
+
+.editProduct-form-group input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Przycisk zapisu/Anuluj */
+.editProduct-submit-button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+
+
+
+.editProduct-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px 30px;
+    background-color: #1d1d1d;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-family: Arial, sans-serif;
+}
+
+.editProduct-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.editProduct-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.editProduct-form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    background-color: #0e1113;
+    color: white;
+    border: 1px solid #444444;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.editProduct-form-group input::placeholder {
+    color: #aaaaaa;
+}
+
+.editProduct-form-group input:focus {
+    border-color: #ff6600;
+    background-color: #1c1c1c;
+}
+
+.editProduct-form-group input[type="file"] {
+    color: #aaaaaa;
+    background-color: transparent;
+    border: none;
+}
+
+.editProduct-error-message {
+    color: #d9534f;
+    font-size: 14px;
+    text-align: center;
+    margin-top: -10px;
+}
+
+.editProduct-submit-button {
+    padding: 15px;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: white;
+    background-color: #ff6600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.editProduct-submit-button:hover {
+    background-color: #e65500;
+}
+
+.editProduct-form-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+

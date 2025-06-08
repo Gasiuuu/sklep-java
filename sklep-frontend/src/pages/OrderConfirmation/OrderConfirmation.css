@@ -1,0 +1,20 @@
+.order-notification {
+    margin: auto;
+    text-align: center;
+}
+
+.order-notification-icon {
+    font-size: 6em;
+    color: #ff6600;
+}
+
+.order-not-title {
+    font-size: 3em;
+    padding: 10px;
+}
+
+.order-not-deliveryDate {
+    font-size: 2em;
+    padding: 10px;
+
+}
