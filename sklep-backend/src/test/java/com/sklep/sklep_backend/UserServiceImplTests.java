@@ -48,6 +48,8 @@ public class UserServiceImplTests {
     @Mock
     private MailService mailService;
 
+
+
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -399,4 +401,85 @@ public class UserServiceImplTests {
         assertEquals(500, resp.getStatusCode());
         assertTrue(resp.getError().contains("db err"));
     }
+
+
+    @Test
+    void loginSuccess() {
+        // arrange
+        ReqRes req = new ReqRes();
+        req.setEmail("test@test.com");
+        req.setPassword("test");
+
+        OurUsersEntity user = new OurUsersEntity();
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(null);
+        when(usersRepo.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+
+        when(jwtUtils.generateToken(user)).thenReturn("jwtToken");
+        when(jwtUtils.generateRefreshToken(any(HashMap.class), eq(user)))
+                .thenReturn("refreshToken");
+
+        // act
+        ReqRes resp = userService.login(req);
+
+        // assert
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("Successfully Logged In", resp.getMessage());
+        assertEquals("jwtToken", resp.getToken());
+        assertEquals("refreshToken", resp.getRefreshToken());
+    }
+
+
+    @Test
+    void addOrderSuccess() {
+        // arrange: zamawiamy 2 szt. produktu o ID 1
+        ProductsAndNumber pan = new ProductsAndNumber();
+        pan.setProductId(1);
+        pan.setProductNumber(2);
+
+        OrderDto orderDto = new OrderDto();
+        orderDto.setProductsAndNumbersList(List.of(pan));
+
+        OurUsersEntity user = new OurUsersEntity();          // kupujący
+        ProductsEntity  product = new ProductsEntity();      // istniejący produkt
+        when(usersRepo.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+        when(productsRepo.findById(1)).thenReturn(Optional.of(product));
+
+        OrdersEntity savedOrder = new OrdersEntity();
+        savedOrder.setId(123);                               // >0, żeby przeszło sprawdzenie
+        when(ordersRepo.save(any())).thenReturn(savedOrder);
+
+        // act
+        OrderDto resp = userService.add_order("test@test.com", orderDto);
+
+        // assert
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("Order succesfully added", resp.getMessage());
+        assertEquals(savedOrder, resp.getOrdersEntity());
+    }
+
+    @Test
+    void addOrderProductNotFound() {
+        // arrange: próbujemy zamówić produkt, którego nie ma
+        ProductsAndNumber pan = new ProductsAndNumber();
+        pan.setProductId(999);
+        pan.setProductNumber(1);
+
+        OrderDto orderDto = new OrderDto();
+        orderDto.setProductsAndNumbersList(List.of(pan));
+
+        OurUsersEntity user = new OurUsersEntity();
+        when(usersRepo.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+        when(productsRepo.findById(999)).thenReturn(Optional.empty());  // brak produktu
+
+        // act
+        OrderDto resp = userService.add_order("test@test.com", orderDto);
+
+        // assert
+        assertEquals(500, resp.getStatusCode()); // w serwisie trafia do catch -> 500
+        assertTrue(resp.getError().contains("Product with ID 999"));
+    }
+
+
 }
