@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserService from "../../services/UserService";
 import './Register.css';
+import AuthService from "../../services/AuthService.js";
 
 function Register() {
 

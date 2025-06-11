@@ -60,6 +60,16 @@ class UserService {
     }
 
 
+    static async deleteUser(userId) {
+        await axios.delete(`${UserService.BASE_URL}/admin/delete-user/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            },
+        });
+    }
+
+
+
     static async getYourProfile(token) {
         const response = await axios.get(`${UserService.BASE_URL}/adminuser/get-profile`, {
             headers: {

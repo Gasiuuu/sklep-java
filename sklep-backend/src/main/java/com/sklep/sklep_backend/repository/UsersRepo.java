@@ -1,18 +1,18 @@
-package com.sklep.sklep_backend.repository;
+//package com.sklep.sklep_backend.repository;
+//
+//
+//import com.sklep.sklep_backend.entity.OurUsersEntity;
+//import org.springframework.data.jpa.repository.JpaRepository;
+//
+//import java.util.Optional;
+//
+//public interface UsersRepo extends JpaRepository<OurUsersEntity, Integer> {
+//
+//    Optional<OurUsersEntity> findByEmail(String email);
+//
+//}
 
-
-import com.sklep.sklep_backend.entity.OurUsersEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
-
-public interface UsersRepo extends JpaRepository<OurUsersEntity, Integer> {
-
-    Optional<OurUsersEntity> findByEmail(String email);
-
-}
-
-
+//
 //package com.sklep.sklep_backend.repository;
 //
 //import com.sklep.sklep_backend.entity.OurUsersEntity;
@@ -72,69 +72,67 @@ public interface UsersRepo extends JpaRepository<OurUsersEntity, Integer> {
 //}
 
 
-//package com.sklep.sklep_backend.repository;
-//
-//import com.sklep.sklep_backend.entity.OurUsersEntity;
-//import jakarta.persistence.EntityManager;
-//import jakarta.persistence.PersistenceContext;
-//import org.springframework.stereotype.Repository;
-//import org.springframework.transaction.annotation.Transactional;   // <-- SPRING!
-//
-//import java.util.List;
-//import java.util.Optional;
-//
-//@Repository
-//@Transactional(readOnly = true)   // klasa pod SELECT-y
-//public class UsersRepo {
-//
-//    @PersistenceContext
-//    private EntityManager entityManager;
-//
-//    /* ---------- metody wyszukiwania ---------- */
-//
-//    public Optional<OurUsersEntity> findByEmail(String email) {
-//        String jpql = "SELECT u FROM OurUsersEntity u WHERE u.email = :email";
-//        // ① pobieramy listę, ② dopiero z niej stream
-//        return entityManager.createQuery(jpql, OurUsersEntity.class)
-//                .setParameter("email", email)
-//                .setMaxResults(1)
-//                .getResultList()              // ← zamiana z getResultStream()
-//                .stream()
-//                .findFirst();
-//    }
-//
-//    public Optional<OurUsersEntity> findById(Integer id) {
-//        return Optional.ofNullable(entityManager.find(OurUsersEntity.class, id));
-//    }
-//
-//    /* ---------- pełny odpowiednik findAll() i count() ---------- */
-//
-//    public List<OurUsersEntity> findAll() {
-//        String jpql = "SELECT u FROM OurUsersEntity u";
-//        return entityManager.createQuery(jpql, OurUsersEntity.class).getResultList();
-//    }
-//
-//    public long count() {
-//        String jpql = "SELECT COUNT(u) FROM OurUsersEntity u";
-//        return entityManager.createQuery(jpql, Long.class).getSingleResult();
-//    }
-//
-//    /* ---------- zapisz / usuń ---------- */
-//
-//    // dla modyfikacji potrzebna transakcja z readOnly = false
-//    @Transactional
-//    public OurUsersEntity save(OurUsersEntity user) {
-//        if (user.getId() == null) {
-//            entityManager.persist(user);
-//            return user;
-//        }
-//        return entityManager.merge(user);
-//    }
-//
-//    @Transactional
-//    public void deleteById(Integer id) {
-//        findById(id).ifPresent(entityManager::remove);
-//    }
-//}
+package com.sklep.sklep_backend.repository;
+
+import com.sklep.sklep_backend.entity.OurUsersEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+@Transactional(readOnly = true)   // klasa pod SELECT-y
+public class UsersRepo {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    /* ---------- metody wyszukiwania ---------- */
+
+    public Optional<OurUsersEntity> findByEmail(String email) {
+        String jpql = "SELECT u FROM OurUsersEntity u WHERE u.email = :email";
+        return entityManager.createQuery(jpql, OurUsersEntity.class)
+                .setParameter("email", email)
+                .setMaxResults(1)
+                .getResultList()
+                .stream()
+                .findFirst();
+    }
+
+    public Optional<OurUsersEntity> findById(Integer id) {
+        return Optional.ofNullable(entityManager.find(OurUsersEntity.class, id));
+    }
+
+    /* ---------- pełny odpowiednik findAll() i count() ---------- */
+
+    public List<OurUsersEntity> findAll() {
+        String jpql = "SELECT u FROM OurUsersEntity u";
+        return entityManager.createQuery(jpql, OurUsersEntity.class).getResultList();
+    }
+
+    public long count() {
+        String jpql = "SELECT COUNT(u) FROM OurUsersEntity u";
+        return entityManager.createQuery(jpql, Long.class).getSingleResult();
+    }
+
+    /* ---------- zapisz / usuń ---------- */
+
+    @Transactional
+    public OurUsersEntity save(OurUsersEntity user) {
+        if (user.getId() == null) {
+            entityManager.persist(user);
+            return user;
+        }
+        return entityManager.merge(user);
+    }
+
+    @Transactional
+    public void deleteById(Integer id) {
+        findById(id).ifPresent(entityManager::remove);
+    }
+}
 
 

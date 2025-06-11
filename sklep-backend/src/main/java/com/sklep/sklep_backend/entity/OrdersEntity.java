@@ -13,12 +13,10 @@ public class OrdersEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // Relacja wiele zamówień do jednego użytkownika (Many-to-One)
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private OurUsersEntity ourUser;
 
-    // Relacja wiele zamówień do wielu produktów (Many-to-Many)
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
